@@ -1,0 +1,339 @@
+#include<iostream>
+using namespace std;
+#include<stdlib.h>
+#include<string>
+#include<iomanip>
+#include <time.h>
+
+#define MAXSIZE 100
+#define OK 1
+#define ERROR 0
+#define OVERFLOW -2
+
+typedef int Status;
+
+typedef struct
+{
+	string o_info,p_name,address,p_phone,o_num;
+}ElemType;
+
+typedef struct
+{
+	ElemType *elem;
+	int length;
+}o_SqList;
+
+Status InitList(o_SqList &L); //初始化顺序表 
+Status Input(o_SqList &L,int i);//输入内容到顺序表
+void ShowList(o_SqList L);//按列对其遍历所有内容 
+void ShowLine(o_SqList L,int i);//用于单行输出 
+void FindOrder(o_SqList L);//可根据订单号、订餐人姓名等进行查询，显示所有符合条件的信息。
+int FindNumber(o_SqList L);//用于查找订单编号 
+int FindName(o_SqList L);//用于查找姓名 
+
+char *ReadAllLine();//逐行读取文件内容并输出 
+void WriteLine_info(o_SqList L);//逐行写入套餐信息 
+void WriteLine_num(o_SqList L);//逐行写入套餐数量 
+void WriteLine_name(o_SqList L);//逐行写入订单人姓名 
+void WriteLine_phone(o_SqList L);//逐行写入订单人电话 
+void WriteLine_address(o_SqList L); //逐行写入派送地址 
+void CleanTxt();//清空文本内容 
+void AutoTime();
+
+int main()
+{
+	o_SqList L;
+	int ch;
+	
+	InitList(L);
+	
+	while(1)
+	{
+		cout<<"***********************Order System***********************"<<endl;
+		cout<<"*	1.订餐		2.查询		3.显示		*"<<endl;
+		cout<<"**********************************************************"<<endl<<"Please choose:";
+		cin>>ch;
+	
+		switch(ch)
+		{
+			case 1:{	*ReadAllLine(); 
+						cout<<"Please try to input the order info,numers,perple's name&phone number:'"<<endl;
+						Input(L,1);	};break;
+			
+			case 2:{	
+						FindOrder(L);
+						
+			};break;
+			
+			case 3:{	ShowList(L); 
+				
+			};break;
+			case 4:CleanTxt();break;
+		}
+	}
+		return 0;	
+}
+ 
+Status InitList(o_SqList &L)
+{//初始化顺序表 
+	L.elem=new ElemType[MAXSIZE];
+	if(!L.elem) return ERROR;
+	L.length=0;
+	return OK;
+}
+
+
+Status Input(o_SqList &L,int i)  
+{//输入内容到顺序表 
+	//if(i>L.length||i<0) return ERROR;
+	
+	cin>>L.elem[i].o_info;//编号		
+	cin>>L.elem[i].o_num;//数量 
+	cin>>L.elem[i].p_name;//用户名称 
+	cin>>L.elem[i].p_phone;	//用户电话 
+	cin>>L.elem[i].address;	//用户地址 
+	
+	L.length++;
+	 
+	ShowList(L);
+	
+	//写入文件 
+	WriteLine_info(L);
+	WriteLine_num(L);
+	WriteLine_name(L);
+	WriteLine_phone(L);
+	WriteLine_address(L);
+	
+	AutoTime();
+				
+	return OK;
+	
+	system("pause");
+	system("cls");	
+}
+
+
+void ShowList(o_SqList L)
+{//按列对其遍历所有内容
+	int i;
+	if(L.length>0)
+	{
+		for(i=1;i<=L.length;i++)
+		{
+			cout<<setw(6)<<L.elem[i].o_info;
+			cout<<setw(6)<<L.elem[i].o_num;
+			cout<<setw(6)<<L.elem[i].p_name;
+			cout<<setw(6)<<L.elem[i].p_phone;
+			cout<<setw(6)<<L.elem[i].address<<endl;
+		}
+	}
+	else cout<<"Empty"<<endl; 	
+	system("pause");
+	system("cls");
+}
+
+
+void ShowLine(o_SqList L,int i)
+{//用于单行输出 
+	cout<<setw(4)<<L.elem[i].o_info;
+	cout<<setw(4)<<L.elem[i].o_num;
+	cout<<setw(4)<<L.elem[i].p_name;
+	cout<<setw(4)<<L.elem[i].p_phone;
+	cout<<setw(4)<<L.elem[i].address<<endl;
+}
+//--------------以下函数用于查找
+void FindOrder(o_SqList L)
+{//可根据订单号、订餐人姓名等进行查询，显示所有符合条件的信息。
+	int ch,t,j,flag=1;
+	string OrderNumber,PeopleName;
+	cout<<"Please choose a way to find"<<endl<<"1.OrderNumber	2.People Name"<<endl;
+	cin>>ch;
+	switch(ch)
+	{
+		case 1:	FindNumber(L);	break;
+		case 2:	FindName(L);	break;
+	}
+}
+
+int FindNumber(o_SqList L)
+{//用于查找订单编号 
+ 
+ 	int i,j=0;
+	string OrderNumber;
+	
+	cout<<"Please input the OrderNumber:";
+	cin>>OrderNumber;
+					
+	for(i=1;i<=L.length;i++)
+	{
+		if(OrderNumber==L.elem[i].o_info) 
+		{	
+			ShowLine(L,i);
+			j++;
+		}
+	}
+
+	if(j==0) cout<<"No this info."<<endl;
+	
+		system("pause");
+		system("cls");
+
+ } 
+ 
+ int FindName(o_SqList L)
+{//用于查找订单编号 
+ 
+ 	int i,j=0;
+	string p_name;
+	
+	cout<<"Please input the people's name:";
+	cin>>p_name;
+	
+	for(i=1;i<=L.length;i++)
+	{
+		if(p_name==L.elem[i].p_name) 
+		{	
+			ShowLine(L,i);
+			j++;
+		}
+	}
+
+	if(j==0) cout<<"No this info."<<endl;
+	
+		system("pause");
+		system("cls");
+
+ } 
+ 
+char *ReadAllLine()
+{//逐行读取文件内容并输出 
+	 char filename[] = "E:/学习/编程/学校/文件/套餐.txt"; //文件名
+     FILE *fp; 
+     char StrLine[1024];             //每行最大读取的字符数
+     if((fp = fopen(filename,"r")) == NULL) //判断文件是否存在及可读
+     { 
+         printf("error!"); 
+         return 0; 
+     } 
+ 
+     while (!feof(fp)) 
+     { 
+         fgets(StrLine,1024,fp);  //读取一行
+         printf("%s\n", StrLine); //输出
+     } 
+     fclose(fp);                     //关闭文件
+}
+
+void WriteLine_info(o_SqList L)
+{//逐行写入套餐信息 
+	int i=1;
+	FILE *fp_info= fopen("E:/学习/编程/学校/文件/订单信息表/订单编号.txt", "a");    
+	if(fp_info!=NULL)  
+	{
+		const char*InputStr_info=L.elem[i].o_info.c_str();
+	    fseek(fp_info, 0, SEEK_END);
+	    fputs(InputStr_info,fp_info);        
+	    fputs("\r\n",fp_info);       
+	    fclose(fp_info); 
+	    i++;
+	}
+
+}
+void WriteLine_num(o_SqList L)
+{//逐行写入套餐数量 
+	int i=1;
+	FILE *fp_num= fopen("E:/学习/编程/学校/文件/订单信息表/订单数量.txt", "a");    
+	if(fp_num!=NULL)  
+	{
+		const char*InputStr_num=L.elem[i].o_num.c_str();
+	    fseek(fp_num, 0, SEEK_END);
+	    fputs(InputStr_num,fp_num);        
+	    fputs("\r\n",fp_num);       
+	    fclose(fp_num); 
+	    i++;
+	}
+	
+}
+
+void WriteLine_name(o_SqList L)
+{//逐行写入订单人姓名 
+	int i=1;	
+	FILE *fp_name= fopen("E:/学习/编程/学校/文件/订单信息表/订单人姓名.txt", "a");    
+	if(fp_name!=NULL)  
+	{
+		const char*InputStr_name=L.elem[i].p_name.c_str();
+	    fseek(fp_name, 0, SEEK_END);
+	    fputs(InputStr_name,fp_name);        
+	    fputs("\r\n",fp_name);       
+	    fclose(fp_name); 
+	    i++;
+	}
+
+}
+void WriteLine_phone(o_SqList L)
+{//逐行写入订单人电话 
+	int i=1;	
+	FILE *fp_phone= fopen("E:/学习/编程/学校/文件/订单信息表/订单人电话.txt", "a");    
+	if(fp_phone!=NULL)  
+	{
+		const char*InputStr_phone=L.elem[i].p_phone.c_str();
+	    fseek(fp_phone, 0, SEEK_END);
+	    fputs(InputStr_phone,fp_phone);        
+	    fputs("\r\n",fp_phone);       
+	    fclose(fp_phone); 
+	    i++;
+	}
+}
+void WriteLine_address(o_SqList L)
+{//逐行写入地址 
+	int i=1;
+	FILE *fp_address= fopen("E:/学习/编程/学校/文件/订单信息表/派送地址-如果没用删了就可以了.txt", "a");    
+	if(fp_address!=NULL)  
+	{
+		const char*InputStr_address=L.elem[i].address.c_str();
+	    fseek(fp_address, 0, SEEK_END);
+	    fputs(InputStr_address,fp_address);        
+	    fputs("\r\n",fp_address);       
+	    fclose(fp_address); 
+	    i++;
+	}
+}
+
+void CleanTxt()
+{//清除已保存订单 
+ 	FILE *fp_info= fopen("E:/学习/编程/学校/文件/订单信息表/订单编号.txt", "w");
+ 	fclose(fp_info);
+ 	FILE *fp_num= fopen("E:/学习/编程/学校/文件/订单信息表/订单数量.txt", "w");
+ 	fclose(fp_num);
+ 	FILE *fp_name= fopen("E:/学习/编程/学校/文件/订单信息表/订单人姓名.txt", "w");
+ 	fclose(fp_name);
+ 	FILE *fp_phone= fopen("E:/学习/编程/学校/文件/订单信息表/订单人电话.txt", "w");
+ 	fclose(fp_phone);
+ 	FILE *fp_address= fopen("E:/学习/编程/学校/文件/订单信息表/派送地址.txt", "w");
+ 	fclose(fp_address);
+ 	FILE *fp_time= fopen("E:/学习/编程/学校/文件/订单信息表/下单时间.txt", "w");
+ 	fclose(fp_time);
+ 	printf("清除成功\n");
+}
+
+void AutoTime() 
+{//自动生成时间，并写入到文件 
+	time_t rawtime;
+	struct tm * timeinfo;
+	time (&rawtime);
+	timeinfo = localtime (&rawtime);
+//	printf ("%4d%02d%02d%02d%02d%02d\n",1900+timeinfo->tm_year, 1+timeinfo->tm_mon,timeinfo->tm_mday,timeinfo->tm_hour,timeinfo->tm_min,timeinfo->tm_sec);
+	int i;
+//	FILE *fp_time= fopen("E:/学习/编程/学校/文件/订单信息表/下单时间.txt", "a");
+	
+	int time[6]={1900+timeinfo->tm_year, 1+timeinfo->tm_mon,timeinfo->tm_mday,timeinfo->tm_hour,timeinfo->tm_min,timeinfo->tm_sec};
+
+
+	FILE *fp_time= fopen("E:/学习/编程/学校/文件/订单信息表/下单时间.txt","a");
+	for(i=0;i<6;i++)
+	{
+	fprintf(fp_time,"%d",time[i]);
+	}
+	fputs("\n",fp_time); 
+	fclose(fp_time);
+} 
